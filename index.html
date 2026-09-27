@@ -16,7 +16,11 @@
     .bg-brand {
       background-color: #1e4976;
     }
-    
+
+    .hover-bg-brand:hover {
+      background-color: #163658;
+    }
+
     .border-brand {
       border-color: #1e4976;
     }
@@ -26,27 +30,38 @@
       color: #94a3b8;
     }
 
-    /* Smooth touch scrolling */
     .touch-scroll {
       -webkit-overflow-scrolling: touch;
+    }
+
+    /* Modal Backdrop Transitions */
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
 <body class="pb-24 min-h-screen flex flex-col">
 
   <!-- Header Navbar -->
-  <header class="bg-brand text-white px-4 sm:px-6 py-4 shadow-md sticky top-0 z-30 flex justify-between items-center">
+  <header class="bg-brand text-white px-4 sm:px-6 py-3.5 shadow-md sticky top-0 z-30 flex justify-between items-center">
     <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-bold text-lg text-sky-200">W</div>
       <h1 class="text-xl font-bold tracking-wide">My Works</h1>
     </div>
     
-    <div class="flex items-center gap-2">
-      <button onclick="openLocationModal()" class="text-xs bg-white/10 hover:bg-white/20 active:bg-white/30 text-white px-2.5 py-1.5 rounded-lg border border-white/20 transition flex items-center gap-1">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <button onclick="openSyncModal()" class="text-xs bg-sky-500/20 hover:bg-sky-500/30 text-sky-100 font-medium px-2.5 py-1.5 rounded-lg border border-sky-400/30 transition flex items-center gap-1">
+        <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+        <span class="hidden xs:inline">Backup &</span> Sync
+      </button>
+
+      <button onclick="openLocationModal()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-lg border border-white/20 transition flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
         <span>Locations</span>
       </button>
 
-      <button onclick="openEngineerModal()" class="text-xs bg-white/10 hover:bg-white/20 active:bg-white/30 text-white px-2.5 py-1.5 rounded-lg border border-white/20 transition flex items-center gap-1">
+      <button onclick="openEngineerModal()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-lg border border-white/20 transition flex items-center gap-1">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         <span>Engineers</span>
       </button>
@@ -55,17 +70,28 @@
 
   <main class="max-w-4xl w-full mx-auto px-3 sm:px-6 mt-4 sm:mt-6 flex-1">
     
+    <!-- GitHub Data Alert Notice -->
+    <div id="githubSyncBanner" class="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4 mb-4 flex items-start justify-between text-xs sm:text-sm text-amber-900 shadow-sm">
+      <div class="flex gap-2.5 items-start">
+        <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        <div>
+          <span class="font-bold">Using GitHub Pages?</span> Data added on laptop stays in local browser storage unless saved back into the file. Use <strong>Backup & Sync</strong> to transfer data to mobile, or export an updated HTML file!
+        </div>
+      </div>
+      <button onclick="document.getElementById('githubSyncBanner').remove()" class="text-amber-500 hover:text-amber-700 ml-2 font-bold text-base">&times;</button>
+    </div>
+
     <!-- Filter Card -->
     <div class="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 mb-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Location</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Filter by Location</label>
           <select id="locationFilter" onchange="onLocationFilterChange()" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-700 outline-none cursor-pointer">
             <option value="All">All Locations</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Engineer</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Filter by Engineer</label>
           <select id="engineerFilter" onchange="render()" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-700 outline-none cursor-pointer">
             <option value="All">All Engineers</option>
           </select>
@@ -88,9 +114,9 @@
 
     <div class="flex justify-between items-center mb-3 px-1">
       <div id="activeCountText" class="text-xs text-slate-500 font-medium">0 active works</div>
-      <button onclick="openMobileHelpModal()" class="text-xs text-sky-700 hover:underline flex items-center gap-1 font-medium">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M12 14a2 2 0 100-4 2 2 0 000 4zM12 2a10 10 0 100 20 10 10 0 000-20z"></path></svg>
-        How to use on Mobile?
+      <button onclick="openSyncModal()" class="text-xs text-sky-700 hover:underline flex items-center gap-1 font-medium">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        How to sync data on Mobile?
       </button>
     </div>
 
@@ -99,7 +125,7 @@
 
     <!-- Add Work Button -->
     <div class="mt-6 mb-8">
-      <button onclick="openAddModal()" class="w-full bg-brand hover:bg-[#163658] active:bg-[#0f2742] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-base">
+      <button onclick="openAddModal()" class="w-full bg-brand hover-bg-brand active:bg-[#0f2742] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-base">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
         + ADD WORK
       </button>
@@ -108,7 +134,7 @@
   </main>
 
   <!-- ADD WORK MODAL -->
-  <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+  <div id="addModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl transform transition-all">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-bold text-slate-800">Add New Work</h3>
@@ -139,13 +165,82 @@
 
       <div class="flex justify-end gap-3 mt-6">
         <button onclick="closeAddModal()" class="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
-        <button onclick="addTask()" class="px-5 py-2.5 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-[#163658] shadow">Save Work</button>
+        <button onclick="addTask()" class="px-5 py-2.5 rounded-lg bg-brand text-white text-sm font-semibold hover-bg-brand shadow">Save Work</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKUP & SYNC / EXPORT HTML MODAL -->
+  <div id="syncModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto touch-scroll">
+      <div class="flex justify-between items-center mb-4 border-b pb-3">
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">Backup & Sync Data</h3>
+          <p class="text-xs text-slate-500">Sync between Laptop & Mobile devices</p>
+        </div>
+        <button onclick="closeSyncModal()" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Why Data Doesn't Show Explanation -->
+      <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl mb-4 text-xs text-sky-900">
+        <span class="font-bold block mb-1">Why updated data doesn't automatically show on Mobile:</span>
+        <p>When you update data on your laptop browser, browsers store it locally in <code>localStorage</code>. GitHub Pages only serves the static standard file structure unless you update the default data inside the code itself!</p>
+      </div>
+
+      <!-- Option 1: Save updated HTML for GitHub -->
+      <div class="border border-slate-200 rounded-xl p-4 mb-4 bg-slate-50/50">
+        <h4 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-brand text-white text-xs flex items-center justify-center font-bold">1</span>
+          Option A: Export Updated HTML for GitHub (Recommended)
+        </h4>
+        <p class="text-xs text-slate-600 mb-3">Download a new <code>index.html</code> containing your existing tasks/locations/engineers as the default state. Upload this file to GitHub so all mobile devices display your updated data automatically upon opening!</p>
+        <button onclick="exportUpdatedHtmlFile()" class="w-full bg-brand text-white hover-bg-brand text-xs font-bold py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Download Updated index.html for GitHub
+        </button>
+      </div>
+
+      <!-- Option 2: JSON Backup & Restore -->
+      <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+        <h4 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-700 text-white text-xs flex items-center justify-center font-bold">2</span>
+          Option B: Transfer via JSON Backup
+        </h4>
+        <p class="text-xs text-slate-600 mb-3">Export data on laptop, then import the file or paste JSON on your mobile phone.</p>
+        
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <button onclick="exportJsonFile()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold py-2 px-3 rounded-lg flex items-center justify-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            Export JSON File
+          </button>
+          <label class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold py-2 px-3 rounded-lg flex items-center justify-center gap-1 cursor-pointer text-center">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4 4m4-4V4"></path></svg>
+            Import JSON File
+            <input type="file" id="importFileInput" accept=".json" onchange="importJsonFile(event)" class="hidden">
+          </label>
+        </div>
+
+        <div class="space-y-2">
+          <button onclick="copyDataToClipboard()" class="w-full text-xs border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 py-2 rounded-lg font-medium flex items-center justify-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            Copy Data String to Clipboard
+          </button>
+          
+          <textarea id="pasteJsonArea" rows="2" placeholder="Or paste JSON string here on mobile to import..." class="w-full p-2 border border-slate-300 rounded-lg text-xs outline-none focus:ring-1 focus:ring-sky-700"></textarea>
+          <button onclick="importPastedJson()" class="w-full bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold py-2 rounded-lg">Apply Pasted JSON Data</button>
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-4">
+        <button onclick="closeSyncModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-300">Close</button>
       </div>
     </div>
   </div>
 
   <!-- MANAGE LOCATIONS MODAL -->
-  <div id="locationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+  <div id="locationModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-bold text-slate-800">Manage Locations</h3>
@@ -156,7 +251,7 @@
 
       <div class="flex gap-2 mb-4">
         <input type="text" id="addLocationInput" placeholder="New Location (e.g., Saham NAMA)" class="flex-1 p-2.5 border border-slate-300 rounded-lg text-sm outline-none">
-        <button onclick="addNewLocation()" class="bg-brand text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover:bg-[#163658]">Add</button>
+        <button onclick="addNewLocation()" class="bg-brand text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover-bg-brand">Add</button>
       </div>
 
       <div id="locationListContainer" class="max-h-60 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-lg mb-4 touch-scroll"></div>
@@ -168,7 +263,7 @@
   </div>
 
   <!-- MANAGE ENGINEERS MODAL -->
-  <div id="engineerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+  <div id="engineerModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-bold text-slate-800">Manage Engineers</h3>
@@ -184,7 +279,7 @@
           <select id="addEngineerLocationSelect" class="flex-1 p-2.5 border border-slate-300 rounded-lg text-sm outline-none bg-white">
             <option value="All">Assigned Location (Optional)</option>
           </select>
-          <button onclick="addNewEngineer()" class="bg-brand text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover:bg-[#163658]">Add Engineer</button>
+          <button onclick="addNewEngineer()" class="bg-brand text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover-bg-brand">Add Engineer</button>
         </div>
       </div>
 
@@ -192,41 +287,6 @@
 
       <div class="flex justify-end">
         <button onclick="closeEngineerModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-200">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MOBILE SYNC & ACCESS HELP MODAL -->
-  <div id="mobileHelpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="text-base font-bold text-slate-800">How to Use on Phone & Laptop</h3>
-        <button onclick="closeMobileHelpModal()" class="text-slate-400 hover:text-slate-600">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
-        <p>To use this <strong>My Works</strong> app on both your laptop and mobile phone seamlessly:</p>
-        
-        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-          <div class="font-bold text-slate-800 mb-1">Option A: Host Free on GitHub / Netlify (Recommended)</div>
-          <div>Upload this file (`index.html`) to GitHub Pages or Netlify for a free personal link (e.g. <code>myworks.netlify.app</code>) that you can open on both phone and laptop.</div>
-        </div>
-
-        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-          <div class="font-bold text-slate-800 mb-1">Option B: Save on Google Drive / OneDrive</div>
-          <div>Save this HTML file in your cloud folder. Open it directly on laptop or mobile browser.</div>
-        </div>
-
-        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-          <div class="font-bold text-slate-800 mb-1">Mobile Tip</div>
-          <div>In your mobile browser (Chrome or Safari), tap <strong>"Add to Home Screen"</strong> to create a quick app icon for 1-tap access on site!</div>
-        </div>
-      </div>
-
-      <div class="flex justify-end mt-4">
-        <button onclick="closeMobileHelpModal()" class="px-4 py-2 bg-brand text-white text-xs font-semibold rounded-lg hover:bg-[#163658]">Got It</button>
       </div>
     </div>
   </div>
@@ -469,7 +529,7 @@
       }
     }
 
-    // 6. Modal Functions
+    // 6. Add Work Logic
     function openAddModal() {
       document.getElementById('addModal').classList.remove('hidden');
       document.getElementById('addModal').classList.add('flex');
@@ -486,9 +546,7 @@
       const title = document.getElementById('newTitle').value.trim();
       const eng = document.getElementById('newEngineerSelect').value;
 
-      if (!title) {
-        return;
-      }
+      if (!title) return;
 
       const today = new Date();
       const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -539,11 +597,7 @@
     function addNewLocation() {
       const input = document.getElementById('addLocationInput');
       const val = input.value.trim();
-      if (!val) return;
-
-      if (locationsList.includes(val)) {
-        return;
-      }
+      if (!val || locationsList.includes(val)) return;
 
       locationsList.push(val);
       input.value = '';
@@ -558,12 +612,10 @@
         const trimmed = newName.trim();
         locationsList[index] = trimmed;
         
-        // Update locations in engineers
         engineersList.forEach(e => {
           if (e.location === oldName) e.location = trimmed;
         });
 
-        // Update locations in existing tasks
         tasks.forEach(t => {
           if (t.location === oldName) t.location = trimmed;
         });
@@ -669,14 +721,120 @@
       renderEngineerList();
     }
 
-    function openMobileHelpModal() {
-      document.getElementById('mobileHelpModal').classList.remove('hidden');
-      document.getElementById('mobileHelpModal').classList.add('flex');
+    // 7. BACKUP, SYNC & HTML EXPORT FUNCTIONS
+    function openSyncModal() {
+      document.getElementById('syncModal').classList.remove('hidden');
+      document.getElementById('syncModal').classList.add('flex');
     }
 
-    function closeMobileHelpModal() {
-      document.getElementById('mobileHelpModal').classList.add('hidden');
-      document.getElementById('mobileHelpModal').classList.remove('flex');
+    function closeSyncModal() {
+      document.getElementById('syncModal').classList.add('hidden');
+      document.getElementById('syncModal').classList.remove('flex');
+    }
+
+    // Download updated index.html with new hardcoded defaults for GitHub
+    function exportUpdatedHtmlFile() {
+      const currentDocHtml = document.documentElement.outerHTML;
+
+      // Regular expressions to replace initial array declarations in code
+      let updatedHtml = currentDocHtml.replace(
+        /let locationsList = JSON\.parse\(localStorage\.getItem\('myWorksLocations'\)\) \|\| \[[\s\S]*?\];/ ,
+        `let locationsList = JSON.parse(localStorage.getItem('myWorksLocations')) || ${JSON.stringify(locationsList, null, 6)};`
+      );
+
+      updatedHtml = updatedHtml.replace(
+        /let engineersList = JSON\.parse\(localStorage\.getItem\('myWorksEngineersData'\)\) \|\| \[[\s\S]*?\];/ ,
+        `let engineersList = JSON.parse(localStorage.getItem('myWorksEngineersData')) || ${JSON.stringify(engineersList, null, 6)};`
+      );
+
+      updatedHtml = updatedHtml.replace(
+        /let tasks = JSON\.parse\(localStorage\.getItem\('myWorksTasks'\)\) \|\| \[[\s\S]*?\];/ ,
+        `let tasks = JSON.parse(localStorage.getItem('myWorksTasks')) || ${JSON.stringify(tasks, null, 6)};`
+      );
+
+      // Create downloadable HTML blob
+      const blob = new Blob(["<!DOCTYPE html>\n" + updatedHtml], { type: 'text/html' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'index.html';
+      link.click();
+    }
+
+    // Export JSON File
+    function exportJsonFile() {
+      const payload = {
+        locations: locationsList,
+        engineers: engineersList,
+        tasks: tasks,
+        exportedAt: new Date().toISOString()
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `myworks-data-${new Date().toISOString().slice(0,10)}.json`;
+      link.click();
+    }
+
+    // Import JSON File
+    function importJsonFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (imported.locations && imported.engineers && imported.tasks) {
+            locationsList = imported.locations;
+            engineersList = imported.engineers;
+            tasks = imported.tasks;
+            saveData();
+            closeSyncModal();
+          } else {
+            alert('Invalid JSON structure.');
+          }
+        } catch(err) {
+          alert('Could not parse JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Copy Data to Clipboard
+    function copyDataToClipboard() {
+      const payload = JSON.stringify({ locations: locationsList, engineers: engineersList, tasks: tasks });
+      
+      const el = document.createElement('textarea');
+      el.value = payload;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+
+      alert('Data JSON string copied to clipboard!');
+    }
+
+    // Import Pasted JSON string
+    function importPastedJson() {
+      const val = document.getElementById('pasteJsonArea').value.trim();
+      if (!val) return;
+
+      try {
+        const imported = JSON.parse(val);
+        if (imported.locations && imported.engineers && imported.tasks) {
+          locationsList = imported.locations;
+          engineersList = imported.engineers;
+          tasks = imported.tasks;
+          saveData();
+          document.getElementById('pasteJsonArea').value = '';
+          closeSyncModal();
+        } else {
+          alert('Invalid data format.');
+        }
+      } catch (e) {
+        alert('Invalid JSON string.');
+      }
     }
 
     // Initial Launch Setup
