@@ -1,801 +1,933 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Works - Field & Office Task Manager</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .custom-nav-bg {
-            background-color: #1e4976;
-        }
-        .custom-accent {
-            color: #1e4976;
-        }
-        .custom-btn {
-            background-color: #1e4976;
-        }
-        .custom-btn:hover {
-            background-color: #163659;
-        }
-        /* Custom scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Works</title>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      padding-bottom: 60px;
+    }
+
+    .navbar {
+      background-color: #1e4976;
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .management-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .mgmt-btn {
+      background: #ffffff;
+      color: #1e4976;
+      border: 1px solid #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .mgmt-btn:hover {
+      background: #f8fafc;
+      border-color: #1e4976;
+    }
+
+    .filter-card {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      margin-bottom: 16px;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .filter-group {
+      flex: 1;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      background-color: #ffffff;
+      color: #1e293b;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: #1e4976;
+    }
+
+    .tabs-container {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: #475569;
+    }
+
+    .tab-btn.active {
+      background: #1e4976;
+      color: #ffffff;
+    }
+
+    .active-count {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+
+    .engineer-group {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .engineer-header {
+      background: #edf2f7;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #1e293b;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      gap: 12px;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: #1e4976;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+
+    .task-meta {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .task-btn:hover {
+      color: #1e4976;
+    }
+
+    .completed-task .task-title {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .add-work-btn {
+      width: 100%;
+      background: #1e4976;
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .add-work-btn:hover {
+      background: #163658;
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 92%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .form-field {
+      margin-bottom: 12px;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-primary {
+      background: #1e4976;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .item-list {
+      margin-top: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+
+    .item-row:last-child {
+      border-bottom: none;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .small-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    .sync-status {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800">
+<body>
 
-    <!-- Navigation Bar -->
-    <nav class="custom-nav-bg text-white shadow-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Title & Logo -->
-                <div class="flex items-center space-x-3">
-                    <i class="fa-solid font-bold text-2xl text-amber-400 fa-briefcase"></i>
-                    <div>
-                        <h1 class="font-bold text-xl tracking-tight leading-tight">My Works</h1>
-                        <p class="text-xs text-slate-300 hidden sm:block">Field & Office Operations</p>
-                    </div>
-                </div>
+  <div class="navbar">
+    <div>
+      <div class="nav-title">My Works</div>
+      <div class="sync-status" id="syncStatus">Local Mode (Not Synced)</div>
+    </div>
+    <button class="nav-btn" onclick="openModal('syncModal')">⚙️ Sync Config</button>
+  </div>
 
-                <!-- Right Side Actions & Sync Status -->
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                    <!-- Sync Indicator Badge -->
-                    <div id="syncBadge" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30">
-                        <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span id="syncText">Local Mode</span>
-                    </div>
-
-                    <!-- Config Firebase Button -->
-                    <button onclick="openModal('firebaseModal')" class="bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium py-1.5 px-3 rounded-lg border border-white/20 transition duration-150 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-cloud"></i>
-                        <span class="hidden sm:inline">Sync Config</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-
-        <!-- Controls Header: Search, Filters & Action Buttons -->
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-            
-            <!-- Top Row: Add Work + Setup Modals -->
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center space-x-2">
-                    <button onclick="openModal('addWorkModal')" class="custom-btn text-white font-medium px-4 py-2 rounded-lg shadow-sm hover:shadow transition duration-150 flex items-center space-x-2 text-sm">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Add New Work</span>
-                    </button>
-                </div>
-
-                <div class="flex items-center space-x-2 text-sm">
-                    <button onclick="openModal('manageLocationsModal')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-2 rounded-lg border border-slate-300 transition duration-150 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-location-dot text-slate-500"></i>
-                        <span>Locations</span>
-                    </button>
-                    <button onclick="openModal('manageEngineersModal')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-2 rounded-lg border border-slate-300 transition duration-150 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-user-gear text-slate-500"></i>
-                        <span>Engineers</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Bottom Row: Filters & Search -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 pt-2 border-t border-slate-100">
-                <!-- Location Filter -->
-                <div class="lg:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Location Filter</label>
-                    <select id="filterLocation" onchange="renderTasks()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="ALL">All Locations</option>
-                    </select>
-                </div>
-
-                <!-- Engineer Filter -->
-                <div class="lg:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Engineer Filter</label>
-                    <select id="filterEngineer" onchange="renderTasks()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="ALL">All Engineers</option>
-                    </select>
-                </div>
-
-                <!-- Search Input -->
-                <div class="lg:col-span-4 sm:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Search Tasks</label>
-                    <div class="relative">
-                        <input type="text" id="searchInput" onkeyup="renderTasks()" placeholder="Search active or completed works..." class="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabs Navigation (Active Works vs Completed History) -->
-        <div class="flex items-center justify-between border-b border-slate-200">
-            <div class="flex space-x-2">
-                <button id="tabActive" onclick="switchTab('active')" class="py-2.5 px-5 font-semibold text-sm border-b-2 border-blue-800 text-blue-900 transition flex items-center space-x-2">
-                    <i class="fa-solid fa-list-check"></i>
-                    <span>Active Works</span>
-                    <span id="activeCountBadge" class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
-                </button>
-                <button id="tabCompleted" onclick="switchTab('completed')" class="py-2.5 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center space-x-2">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span>Completed History</span>
-                    <span id="completedCountBadge" class="ml-2 bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Grouped Tasks Workspace -->
-        <div id="tasksContainer" class="space-y-6">
-            <!-- Dynamic task groups (by Engineer) will be inserted here -->
-        </div>
-
-    </main>
-
-    <!-- Modal 1: Add New Work -->
-    <div id="addWorkModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden transform transition-all">
-            <div class="custom-nav-bg text-white px-6 py-4 flex items-center justify-between">
-                <h3 class="font-bold text-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-plus-circle"></i>
-                    <span>Add New Work</span>
-                </h3>
-                <button onclick="closeModal('addWorkModal')" class="text-slate-300 hover:text-white text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <form id="addWorkForm" onsubmit="handleAddWork(event)" class="p-6 space-y-4">
-                <!-- Location Field (Top as requested) -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">1. Location / Site *</label>
-                    <select id="workLocation" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <!-- Populated dynamically -->
-                    </select>
-                </div>
-
-                <!-- Engineer Field -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">2. Assigned Engineer / Department *</label>
-                    <select id="workEngineer" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <!-- Populated dynamically -->
-                    </select>
-                </div>
-
-                <!-- Task Description Field -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">3. Task Description *</label>
-                    <textarea id="workDescription" rows="3" required placeholder="Describe the maintenance, field work, or office task..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-                </div>
-
-                <!-- Date Field -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">4. Scheduled Date *</label>
-                    <input type="date" id="workDate" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('addWorkModal')" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200">Cancel</button>
-                    <button type="submit" class="px-5 py-2 custom-btn text-white rounded-lg text-sm font-medium shadow">Save Task</button>
-                </div>
-            </form>
-        </div>
+  <div class="container">
+    
+    <!-- Management Actions Bar -->
+    <div class="management-bar">
+      <button class="mgmt-btn" onclick="openModal('locationModal')">📍 Manage Locations</button>
+      <button class="mgmt-btn" onclick="openModal('engineerModal')">👷 Manage Engineers</button>
     </div>
 
-    <!-- Modal 2: Manage Locations -->
-    <div id="manageLocationsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="custom-nav-bg text-white px-6 py-4 flex items-center justify-between">
-                <h3 class="font-bold text-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>Manage Locations</span>
-                </h3>
-                <button onclick="closeModal('manageLocationsModal')" class="text-slate-300 hover:text-white text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 space-y-4">
-                <!-- Add Location Input -->
-                <div class="flex space-x-2">
-                    <input type="text" id="newLocationName" placeholder="e.g. Barka NAMA" class="flex-grow bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button onclick="handleAddLocation()" class="custom-btn text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
-                        <i class="fa-solid fa-plus mr-1"></i> Add
-                    </button>
-                </div>
-
-                <!-- Locations List -->
-                <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100" id="locationsList">
-                    <!-- Dynamic location list items -->
-                </div>
-
-                <div class="flex justify-end pt-2">
-                    <button onclick="closeModal('manageLocationsModal')" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200">Done</button>
-                </div>
-            </div>
+    <!-- Filter Card -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="locationFilter">Location</label>
+          <select id="locationFilter" onchange="render()">
+            <option value="All">All Locations</option>
+          </select>
         </div>
+        <div class="filter-group">
+          <label for="engineerFilter">Engineer</label>
+          <select id="engineerFilter" onchange="render()">
+            <option value="All">All Engineers</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <input type="text" id="searchInput" placeholder="Search active works..." oninput="render()">
+      </div>
     </div>
 
-    <!-- Modal 3: Manage Engineers -->
-    <div id="manageEngineersModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="custom-nav-bg text-white px-6 py-4 flex items-center justify-between">
-                <h3 class="font-bold text-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-user-gear"></i>
-                    <span>Manage Engineers</span>
-                </h3>
-                <button onclick="closeModal('manageEngineersModal')" class="text-slate-300 hover:text-white text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 space-y-4">
-                <!-- Add Engineer Input -->
-                <div class="flex space-x-2">
-                    <input type="text" id="newEngineerName" placeholder="e.g. Eng. Ahmed" class="flex-grow bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button onclick="handleAddEngineer()" class="custom-btn text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
-                        <i class="fa-solid fa-plus mr-1"></i> Add
-                    </button>
-                </div>
-
-                <!-- Engineers List -->
-                <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100" id="engineersList">
-                    <!-- Dynamic engineer list items -->
-                </div>
-
-                <div class="flex justify-end pt-2">
-                    <button onclick="closeModal('manageEngineersModal')" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200">Done</button>
-                </div>
-            </div>
-        </div>
+    <!-- Active / Completed Tabs -->
+    <div class="tabs-container">
+      <button class="tab-btn active" id="activeTabBtn" onclick="switchTab('active')">Active Works</button>
+      <button class="tab-btn" id="completedTabBtn" onclick="switchTab('completed')">Completed History</button>
     </div>
 
-    <!-- Modal 4: Firebase Configuration Modal -->
-    <div id="firebaseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] flex flex-col">
-            <div class="custom-nav-bg text-white px-6 py-4 flex items-center justify-between shrink-0">
-                <h3 class="font-bold text-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-bolt text-amber-400"></i>
-                    <span>Connect Free Firebase Auto-Sync</span>
-                </h3>
-                <button onclick="closeModal('firebaseModal')" class="text-slate-300 hover:text-white text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+    <div class="active-count" id="activeCountText">0 active works</div>
 
-            <div class="p-6 space-y-6 overflow-y-auto">
-                <!-- Explanation -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-xs sm:text-sm text-blue-900 space-y-2">
-                    <p class="font-semibold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> How Live Auto-Sync Works:</p>
-                    <p>Enter your free Firebase configuration below. Once added, changes made on your laptop will instantly appear on your mobile phone without manual imports or downloads!</p>
-                </div>
+    <!-- Task List Area -->
+    <div id="taskListArea"></div>
 
-                <!-- Config Form -->
-                <form id="firebaseForm" onsubmit="handleSaveFirebaseConfig(event)" class="space-y-3">
-                    <h4 class="text-xs font-bold uppercase text-slate-500 tracking-wider">Paste Firebase Keys Below:</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">apiKey</label>
-                            <input type="text" id="cfg_apiKey" placeholder="AIzaSy..." required class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">authDomain</label>
-                            <input type="text" id="cfg_authDomain" placeholder="my-works.firebaseapp.com" required class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">databaseURL *</label>
-                            <input type="text" id="cfg_databaseURL" placeholder="https://my-works-rtdb.firebaseio.com" required class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">projectId</label>
-                            <input type="text" id="cfg_projectId" placeholder="my-works-project" required class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">storageBucket</label>
-                            <input type="text" id="cfg_storageBucket" placeholder="my-works.appspot.com" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">appId</label>
-                            <input type="text" id="cfg_appId" placeholder="1:123456:web:abcd" required class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs">
-                        </div>
-                    </div>
+    <!-- Add Work Button -->
+    <button class="add-work-btn" onclick="openAddModal()">+ ADD WORK</button>
+  </div>
 
-                    <div class="flex items-center justify-between pt-4">
-                        <button type="button" onclick="clearFirebaseConfig()" class="text-xs text-rose-600 hover:underline">
-                            Disconnect & Use Local Storage
-                        </button>
-                        <button type="submit" class="px-5 py-2 custom-btn text-white rounded-lg text-sm font-medium shadow">
-                            Save & Connect Sync
-                        </button>
-                    </div>
-                </form>
+  <!-- Add/Edit Task Modal -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <div class="modal-title" id="taskModalTitle">Add New Work</div>
+      
+      <!-- 1. LOCATION AT THE TOP -->
+      <div class="form-field">
+        <label>Location</label>
+        <select id="taskLocation" onchange="updateEngineerDropdownInModal()">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
 
-                <!-- Step-by-Step Instructions Accordion -->
-                <div class="border-t border-slate-200 pt-4">
-                    <h4 class="font-bold text-sm text-slate-800 mb-2"><i class="fa-solid fa-list-ol text-blue-600 mr-1"></i> 5-Minute Free Setup Guide:</h4>
-                    <ol class="list-decimal list-inside text-xs text-slate-600 space-y-1.5">
-                        <li>Go to <a href="https://console.firebase.google.com/" target="_blank" class="text-blue-600 underline font-semibold">Firebase Console</a> and click <strong>Create a project</strong>.</li>
-                        <li>Click the <strong>Web (&lt;/&gt;) icon</strong> to register a web app and copy the <code>const firebaseConfig</code> values.</li>
-                        <li>In the side panel, go to <strong>Build &gt; Realtime Database</strong> $\rightarrow$ Click <strong>Create Database</strong>.</li>
-                        <li>Choose <strong>Start in Test Mode</strong> (allows read/write) and enable it.</li>
-                        <li>Paste the keys above and save! Your laptop and mobile are now synced in real time.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
+      <!-- 2. ENGINEER DROPDOWN -->
+      <div class="form-field" id="engineerFieldContainer">
+        <label>Engineer Name</label>
+        <select id="taskEngineer">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+
+      <!-- 3. TASK TITLE -->
+      <div class="form-field">
+        <label>Task Description</label>
+        <input type="text" id="taskTitleInput" placeholder="e.g. LPO not received or Cable Jointing">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveTask()">Save Work</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Firebase SDK (Version 9 modular via CDN script imports) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  <!-- Manage Locations Modal -->
+  <div class="modal" id="locationModal">
+    <div class="modal-content">
+      <div class="modal-title">Manage Locations</div>
+      <div class="form-field">
+        <label>Add New Location</label>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="newLocationInput" placeholder="e.g. Saham NAMA">
+          <button class="btn-primary" onclick="addLocation()">Add</button>
+        </div>
+      </div>
+      <div class="item-list" id="locationListContainer"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('locationModal')">Close</button>
+      </div>
+    </div>
+  </div>
 
-        // APP STATE
-        window.appData = {
-            locations: ["Sohar NAMA", "Saham NAMA", "Shinas NAMA", "Office Works"],
-            engineers: ["Eng. Ahmed", "Eng. Mohammed", "Eng. Said", "Office Works"],
-            tasks: [
-                {
-                    id: "task-1",
-                    location: "Sohar NAMA",
-                    engineer: "Eng. Ahmed",
-                    description: "Substation transformer maintenance and oil check",
-                    date: new Date().toISOString().split('T')[0],
-                    completed: false,
-                    createdAt: Date.now()
-                },
-                {
-                    id: "task-2",
-                    location: "Office Works",
-                    engineer: "Office Works",
-                    description: "Monthly operational performance report preparation",
-                    date: new Date().toISOString().split('T')[0],
-                    completed: false,
-                    createdAt: Date.now() - 3600000
-                }
-            ]
-        };
+  <!-- Manage Engineers Modal -->
+  <div class="modal" id="engineerModal">
+    <div class="modal-content">
+      <div class="modal-title">Manage Engineers</div>
+      <div class="form-field">
+        <label>Location Assignment</label>
+        <select id="engModalLocationSelect">
+          <!-- Dynamically populated without Office Works -->
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Add Engineer Name</label>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="newEngineerInput" placeholder="e.g. Abdullah Al Ajmi">
+          <button class="btn-primary" onclick="addEngineer()">Add</button>
+        </div>
+      </div>
+      <div class="item-list" id="engineerListContainer"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('engineerModal')">Close</button>
+      </div>
+    </div>
+  </div>
 
-        window.currentTab = 'active'; // 'active' or 'completed'
-        window.dbRef = null;
-        window.isFirebaseActive = false;
+  <!-- Sync Config Modal -->
+  <div class="modal" id="syncModal">
+    <div class="modal-content">
+      <div class="modal-title">Firebase Sync Settings</div>
+      <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+        Paste your Firebase Database configuration parameters below to enable real-time cross-device sync.
+      </p>
+      <div class="form-field">
+        <label>API Key</label>
+        <input type="text" id="cfgApiKey">
+      </div>
+      <div class="form-field">
+        <label>Auth Domain</label>
+        <input type="text" id="cfgAuthDomain">
+      </div>
+      <div class="form-field">
+        <label>Database URL</label>
+        <input type="text" id="cfgDatabaseURL" placeholder="https://my-daily-works-5a6c0-default-rtdb.firebaseio.com">
+      </div>
+      <div class="form-field">
+        <label>Project ID</label>
+        <input type="text" id="cfgProjectId">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('syncModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveFirebaseConfig()">Save & Connect</button>
+      </div>
+    </div>
+  </div>
 
-        // LOCAL STORAGE LOAD/SAVE FALLBACKS
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('my_works_data');
-            if (saved) {
-                try {
-                    window.appData = JSON.parse(saved);
-                } catch(e) {
-                    console.error("Failed to parse local storage", e);
-                }
+  <script>
+    // Initial default data state
+    let state = {
+      locations: ["Sohar NAMA", "Saham NAMA", "Shinas NAMA", "Office Works"],
+      engineers: [
+        { name: "Abdullah Al Ajmi", location: "Sohar NAMA" },
+        { name: "Ahmed", location: "Sohar NAMA" },
+        { name: "Salim", location: "Saham NAMA" }
+      ],
+      tasks: [
+        { id: 1, engineer: "Abdullah Al Ajmi", title: "LPO not received", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false },
+        { id: 2, engineer: "Abdullah Al Ajmi", title: "Municipality refund letter", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false },
+        { id: 3, engineer: "Ahmed", title: "SOH/180/2026 - Customer objection", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false },
+        { id: 4, engineer: "Ahmed", title: "SRV sign", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false }
+      ]
+    };
+
+    let currentTab = 'active';
+    let editingTaskId = null;
+    let dbRef = null;
+
+    // Load Local Data First
+    const localData = localStorage.getItem('myWorksData');
+    if (localData) {
+      try { state = JSON.parse(localData); } catch(e){}
+    }
+
+    function initFirebase() {
+      const cfg = JSON.parse(localStorage.getItem('myWorksFirebaseCfg'));
+      if (cfg && cfg.databaseURL) {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(cfg);
+          }
+          dbRef = firebase.database().ref('worksData');
+          document.getElementById('syncStatus').textContent = "⚡ Realtime Synced";
+          
+          dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              state = data;
+              if(!state.locations) state.locations = ["Office Works"];
+              if(!state.engineers) state.engineers = [];
+              if(!state.tasks) state.tasks = [];
+              localStorage.setItem('myWorksData', JSON.stringify(state));
+              refreshUI();
             }
+          });
+        } catch (e) {
+          console.error(e);
+          document.getElementById('syncStatus').textContent = "⚠️ Sync Error";
         }
+      } else {
+        document.getElementById('syncStatus').textContent = "Local Mode (Not Synced)";
+      }
+    }
 
-        function saveToLocalStorage() {
-            localStorage.setItem('my_works_data', JSON.stringify(window.appData));
+    function syncState() {
+      localStorage.setItem('myWorksData', JSON.stringify(state));
+      if (dbRef) {
+        dbRef.set(state);
+      }
+      refreshUI();
+    }
+
+    function refreshUI() {
+      populateFilterDropdowns();
+      renderLocationManagementList();
+      renderEngineerManagementList();
+      render();
+    }
+
+    function populateFilterDropdowns() {
+      const locSelect = document.getElementById('locationFilter');
+      const curLoc = locSelect.value;
+      locSelect.innerHTML = '<option value="All">All Locations</option>';
+      state.locations.forEach(loc => {
+        locSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
+      });
+      locSelect.value = curLoc || "All";
+
+      const engSelect = document.getElementById('engineerFilter');
+      const curEng = engSelect.value;
+      engSelect.innerHTML = '<option value="All">All Engineers</option>';
+      
+      const engSet = new Set(state.engineers.map(e => e.name));
+      engSet.forEach(engName => {
+        engSelect.innerHTML += `<option value="${engName}">${engName}</option>`;
+      });
+      engSelect.value = curEng || "All";
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('activeTabBtn').classList.toggle('active', tab === 'active');
+      document.getElementById('completedTabBtn').classList.toggle('active', tab === 'completed');
+      document.getElementById('searchInput').placeholder = tab === 'active' ? "Search active works..." : "Search completed history...";
+      render();
+    }
+
+    function render() {
+      const selectedLoc = document.getElementById('locationFilter').value;
+      const selectedEng = document.getElementById('engineerFilter').value;
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+      const filteredTasks = state.tasks.filter(t => {
+        const matchesTab = currentTab === 'active' ? !t.completed : t.completed;
+        const matchesLoc = selectedLoc === 'All' || t.location === selectedLoc;
+        const matchesEng = selectedEng === 'All' || t.engineer === selectedEng;
+        const matchesSearch = t.title.toLowerCase().includes(searchQuery) || (t.engineer && t.engineer.toLowerCase().includes(searchQuery));
+        return matchesTab && matchesLoc && matchesEng && matchesSearch;
+      });
+
+      const activeCount = state.tasks.filter(t => !t.completed).length;
+      document.getElementById('activeCountText').textContent = `${activeCount} active works`;
+
+      const grouped = {};
+      filteredTasks.forEach(t => {
+        const key = t.location === 'Office Works' || !t.engineer ? 'Office Works' : t.engineer;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(t);
+      });
+
+      const container = document.getElementById('taskListArea');
+      container.innerHTML = '';
+
+      if (Object.keys(grouped).length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8;">No ${currentTab} works found.</div>`;
+        return;
+      }
+
+      for (const groupHeader in grouped) {
+        const groupEl = document.createElement('div');
+        groupEl.className = 'engineer-group';
+
+        const tasksHtml = grouped[groupHeader].map(t => `
+          <div class="task-item ${t.completed ? 'completed-task' : ''}">
+            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
+            <div class="task-content">
+              <div class="task-title">${t.title}</div>
+              <div class="task-meta">${t.location} · Added ${t.date}</div>
+            </div>
+            <div class="task-actions">
+              <button class="task-btn" onclick="editTask(${t.id})">Edit</button>
+              <button class="task-btn" style="color:#dc2626;" onclick="deleteTask(${t.id})">Delete</button>
+            </div>
+          </div>
+        `).join('');
+
+        groupEl.innerHTML = `
+          <div class="engineer-header">
+            <span>${groupHeader}</span>
+          </div>
+          ${tasksHtml}
+        `;
+        container.appendChild(groupEl);
+      }
+    }
+
+    // Modal Control
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      if (id === 'engineerModal') populateEngModalLocSelect();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // Location Management
+    function addLocation() {
+      const input = document.getElementById('newLocationInput');
+      const val = input.value.trim();
+      if (val && !state.locations.includes(val)) {
+        state.locations.push(val);
+        input.value = '';
+        syncState();
+      }
+    }
+
+    function editLocation(oldLoc) {
+      const newLoc = prompt("Edit Location Name:", oldLoc);
+      if (newLoc && newLoc.trim() !== "" && newLoc !== oldLoc) {
+        const index = state.locations.indexOf(oldLoc);
+        if (index !== -1) {
+          state.locations[index] = newLoc.trim();
+          state.engineers.forEach(e => { if (e.location === oldLoc) e.location = newLoc.trim(); });
+          state.tasks.forEach(t => { if (t.location === oldLoc) t.location = newLoc.trim(); });
+          syncState();
         }
+      }
+    }
 
-        // INITIALIZE FIREBASE IF CONFIG EXISTS
-        function initFirebase() {
-            const cfgStr = localStorage.getItem('firebase_config');
-            if (!cfgStr) {
-                updateSyncStatus('local');
-                loadFromLocalStorage();
-                renderAll();
-                return;
-            }
+    function deleteLocation(loc) {
+      if (loc === "Office Works") {
+        alert("Cannot delete Office Works location.");
+        return;
+      }
+      if (confirm(`Delete location '${loc}'? Tasks assigned to this location will remain.`)) {
+        state.locations = state.locations.filter(l => l !== loc);
+        syncState();
+      }
+    }
 
-            try {
-                const config = JSON.parse(cfgStr);
-                const app = initializeApp(config);
-                const database = getDatabase(app);
-                window.dbRef = ref(database, 'my_works_app');
-                window.isFirebaseActive = true;
+    function renderLocationManagementList() {
+      const container = document.getElementById('locationListContainer');
+      container.innerHTML = state.locations.map(loc => `
+        <div class="item-row">
+          <span>${loc}</span>
+          <div class="item-actions">
+            <button class="small-btn" onclick="editLocation('${loc}')">Edit</button>
+            ${loc !== 'Office Works' ? `<button class="small-btn delete-btn" onclick="deleteLocation('${loc}')">Delete</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
 
-                updateSyncStatus('syncing');
+    // Engineer Management
+    function populateEngModalLocSelect() {
+      const select = document.getElementById('engModalLocationSelect');
+      select.innerHTML = state.locations.filter(l => l !== 'Office Works').map(l => `<option value="${l}">${l}</option>`).join('');
+    }
 
-                // Realtime Sync Listener
-                onValue(window.dbRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        window.appData = data;
-                        if (!window.appData.locations) window.appData.locations = [];
-                        if (!window.appData.engineers) window.appData.engineers = [];
-                        if (!window.appData.tasks) window.appData.tasks = [];
-                        saveToLocalStorage();
-                    } else {
-                        // Push initial default state to DB if empty
-                        syncToDatabase();
-                    }
-                    updateSyncStatus('online');
-                    renderAll();
-                }, (error) => {
-                    console.error("Firebase Sync Error:", error);
-                    updateSyncStatus('offline');
-                });
+    function addEngineer() {
+      const loc = document.getElementById('engModalLocationSelect').value;
+      const input = document.getElementById('newEngineerInput');
+      const name = input.value.trim();
+      if (name && loc) {
+        state.engineers.push({ name: name, location: loc });
+        input.value = '';
+        syncState();
+      }
+    }
 
-            } catch (err) {
-                console.error("Invalid Firebase Config:", err);
-                updateSyncStatus('local');
-                loadFromLocalStorage();
-                renderAll();
-            }
+    function editEngineer(idx) {
+      const eng = state.engineers[idx];
+      const newName = prompt("Edit Engineer Name:", eng.name);
+      if (newName && newName.trim() !== "") {
+        const oldName = eng.name;
+        eng.name = newName.trim();
+        state.tasks.forEach(t => { if (t.engineer === oldName) t.engineer = eng.name; });
+        syncState();
+      }
+    }
+
+    function deleteEngineer(idx) {
+      if (confirm("Delete this engineer?")) {
+        state.engineers.splice(idx, 1);
+        syncState();
+      }
+    }
+
+    function renderEngineerManagementList() {
+      const container = document.getElementById('engineerListContainer');
+      container.innerHTML = state.engineers.map((eng, idx) => `
+        <div class="item-row">
+          <span><strong>${eng.name}</strong> <small style="color:#64748b;">(${eng.location})</small></span>
+          <div class="item-actions">
+            <button class="small-btn" onclick="editEngineer(${idx})">Edit</button>
+            <button class="small-btn delete-btn" onclick="deleteEngineer(${idx})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Task Add / Edit
+    function openAddModal() {
+      editingTaskId = null;
+      document.getElementById('taskModalTitle').textContent = "Add New Work";
+      document.getElementById('taskTitleInput').value = "";
+      
+      const locSelect = document.getElementById('taskLocation');
+      locSelect.innerHTML = state.locations.map(l => `<option value="${l}">${l}</option>`).join('');
+      
+      updateEngineerDropdownInModal();
+      openModal('taskModal');
+    }
+
+    function updateEngineerDropdownInModal() {
+      const selectedLoc = document.getElementById('taskLocation').value;
+      const engContainer = document.getElementById('engineerFieldContainer');
+      const engSelect = document.getElementById('taskEngineer');
+
+      if (selectedLoc === 'Office Works') {
+        engContainer.style.display = 'none';
+        engSelect.innerHTML = '';
+      } else {
+        engContainer.style.display = 'block';
+        const availableEngs = state.engineers.filter(e => e.location === selectedLoc);
+        if (availableEngs.length === 0) {
+          engSelect.innerHTML = '<option value="">No Engineers in this Location</option>';
+        } else {
+          engSelect.innerHTML = availableEngs.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
         }
+      }
+    }
 
-        // SYNC STATE CHANGES TO FIREBASE / LOCAL STORAGE
-        window.syncData = function() {
-            saveToLocalStorage();
-            if (window.isFirebaseActive && window.dbRef) {
-                updateSyncStatus('syncing');
-                set(window.dbRef, window.appData)
-                    .then(() => updateSyncStatus('online'))
-                    .catch(() => updateSyncStatus('offline'));
-            } else {
-                renderAll();
-            }
-        };
+    function saveTask() {
+      const loc = document.getElementById('taskLocation').value;
+      const title = document.getElementById('taskTitleInput').value.trim();
+      const engSelect = document.getElementById('taskEngineer');
+      const eng = loc === 'Office Works' ? '' : engSelect.value;
 
-        function updateSyncStatus(status) {
-            const badge = document.getElementById('syncBadge');
-            const dot = document.getElementById('syncDot');
-            const text = document.getElementById('syncText');
+      if (!title) {
+        alert("Please enter a task description.");
+        return;
+      }
 
-            if (status === 'online') {
-                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30";
-                dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-                text.innerText = "Live Synced";
-            } else if (status === 'syncing') {
-                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30";
-                dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
-                text.innerText = "Syncing...";
-            } else if (status === 'offline') {
-                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-200 border border-rose-400/30";
-                dot.className = "w-2 h-2 rounded-full bg-rose-400";
-                text.innerText = "Sync Error";
-            } else { // Local Mode
-                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-500/20 text-slate-200 border border-slate-400/30";
-                dot.className = "w-2 h-2 rounded-full bg-slate-300";
-                text.innerText = "Local Only";
-            }
+      if (loc !== 'Office Works' && !eng) {
+        alert("Please select an engineer or create one for this location first.");
+        return;
+      }
+
+      if (editingTaskId) {
+        const t = state.tasks.find(x => x.id === editingTaskId);
+        if (t) {
+          t.location = loc;
+          t.engineer = eng;
+          t.title = title;
         }
-
-        // Initialize App on DOM Ready
-        window.addEventListener('DOMContentLoaded', () => {
-            initFirebase();
-            populateFirebaseForm();
+      } else {
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        state.tasks.push({
+          id: Date.now(),
+          location: loc,
+          engineer: eng,
+          title: title,
+          date: dateStr,
+          completed: false
         });
+      }
 
-        // UI RENDERING FUNCTIONS
-        window.renderAll = function() {
-            populateSelects();
-            renderTasks();
-            renderLocationsList();
-            renderEngineersList();
-        };
+      closeModal('taskModal');
+      syncState();
+    }
 
-        function populateSelects() {
-            const filterLoc = document.getElementById('filterLocation');
-            const filterEng = document.getElementById('filterEngineer');
-            const workLoc = document.getElementById('workLocation');
-            const workEng = document.getElementById('workEngineer');
+    function editTask(id) {
+      const t = state.tasks.find(x => x.id === id);
+      if (!t) return;
 
-            const currentLoc = filterLoc.value;
-            const currentEng = filterEng.value;
+      editingTaskId = id;
+      document.getElementById('taskModalTitle').textContent = "Edit Work";
+      document.getElementById('taskTitleInput').value = t.title;
 
-            // Location Filter
-            filterLoc.innerHTML = '<option value="ALL">All Locations</option>' +
-                window.appData.locations.map(l => `<option value="${l}">${l}</option>`).join('');
-            filterLoc.value = currentLoc || "ALL";
+      const locSelect = document.getElementById('taskLocation');
+      locSelect.innerHTML = state.locations.map(l => `<option value="${l}">${l}</option>`).join('');
+      locSelect.value = t.location;
 
-            // Engineer Filter
-            filterEng.innerHTML = '<option value="ALL">All Engineers</option>' +
-                window.appData.engineers.map(e => `<option value="${e}">${e}</option>`).join('');
-            filterEng.value = currentEng || "ALL";
+      updateEngineerDropdownInModal();
+      if (t.location !== 'Office Works') {
+        document.getElementById('taskEngineer').value = t.engineer;
+      }
 
-            // Add Work Modal Selects
-            workLoc.innerHTML = window.appData.locations.map(l => `<option value="${l}">${l}</option>`).join('');
-            workEng.innerHTML = window.appData.engineers.map(e => `<option value="${e}">${e}</option>`).join('');
-            
-            // Set default date to today in form
-            if (!document.getElementById('workDate').value) {
-                document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
-            }
-        }
+      openModal('taskModal');
+    }
 
-        window.renderTasks = function() {
-            const container = document.getElementById('tasksContainer');
-            const locFilter = document.getElementById('filterLocation').value;
-            const engFilter = document.getElementById('filterEngineer').value;
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+    function toggleTask(id) {
+      const t = state.tasks.find(x => x.id === id);
+      if (t) {
+        t.completed = !t.completed;
+        syncState();
+      }
+    }
 
-            const isCompletedTab = window.currentTab === 'completed';
+    function deleteTask(id) {
+      if (confirm("Delete this task?")) {
+        state.tasks = state.tasks.filter(x => x.id !== id);
+        syncState();
+      }
+    }
 
-            // Filter tasks
-            let filteredTasks = window.appData.tasks.filter(t => {
-                const matchTab = isCompletedTab ? t.completed : !t.completed;
-                const matchLoc = locFilter === 'ALL' || t.location === locFilter;
-                const matchEng = engFilter === 'ALL' || t.engineer === engFilter;
-                const matchSearch = !searchQuery || 
-                    t.description.toLowerCase().includes(searchQuery) ||
-                    t.location.toLowerCase().includes(searchQuery) ||
-                    t.engineer.toLowerCase().includes(searchQuery);
+    // Save Firebase Settings
+    function saveFirebaseConfig() {
+      const cfg = {
+        apiKey: document.getElementById('cfgApiKey').value.trim(),
+        authDomain: document.getElementById('cfgAuthDomain').value.trim(),
+        databaseURL: document.getElementById('cfgDatabaseURL').value.trim(),
+        projectId: document.getElementById('cfgProjectId').value.trim()
+      };
 
-                return matchTab && matchLoc && matchEng && matchSearch;
-            });
+      if (!cfg.databaseURL) {
+        alert("Please enter a Database URL.");
+        return;
+      }
 
-            // Update tab badges
-            const activeTasksCount = window.appData.tasks.filter(t => !t.completed).length;
-            const completedTasksCount = window.appData.tasks.filter(t => t.completed).length;
-            document.getElementById('activeCountBadge').innerText = activeTasksCount;
-            document.getElementById('completedCountBadge').innerText = completedTasksCount;
+      localStorage.setItem('myWorksFirebaseCfg', JSON.stringify(cfg));
+      closeModal('syncModal');
+      location.reload();
+    }
 
-            if (filteredTasks.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-white rounded-xl p-12 text-center border border-slate-200">
-                        <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-3"></i>
-                        <h3 class="text-base font-semibold text-slate-700">No ${isCompletedTab ? 'completed' : 'active'} tasks found</h3>
-                        <p class="text-xs text-slate-400 mt-1">Try adjusting your filters or click "Add New Work" above.</p>
-                    </div>
-                `;
-                return;
-            }
+    // Fill Sync Modal with current configs if exists
+    const currentCfg = JSON.parse(localStorage.getItem('myWorksFirebaseCfg'));
+    if (currentCfg) {
+      document.getElementById('cfgApiKey').value = currentCfg.apiKey || '';
+      document.getElementById('cfgAuthDomain').value = currentCfg.authDomain || '';
+      document.getElementById('cfgDatabaseURL').value = currentCfg.databaseURL || '';
+      document.getElementById('cfgProjectId').value = currentCfg.projectId || '';
+    }
 
-            // Group tasks by Engineer (or Office Works if unspecified)
-            const grouped = {};
-            filteredTasks.forEach(task => {
-                const engKey = task.engineer || "Office Works";
-                if (!grouped[engKey]) grouped[engKey] = [];
-                grouped[engKey].push(task);
-            });
-
-            // Render Task Groups
-            let html = '';
-            for (const [engineerName, tasks] of Object.entries(grouped)) {
-                html += `
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <!-- Group Header -->
-                        <div class="bg-slate-100/80 px-5 py-3 border-b border-slate-200 flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <i class="fa-solid ${engineerName === 'Office Works' ? 'fa-building-user text-slate-600' : 'fa-user-gear custom-accent'}"></i>
-                                <h3 class="font-bold text-slate-800 text-sm sm:text-base">${engineerName}</h3>
-                            </div>
-                            <span class="text-xs bg-slate-200 text-slate-700 font-semibold px-2.5 py-0.5 rounded-full">
-                                ${tasks.length} ${tasks.length === 1 ? 'Task' : 'Tasks'}
-                            </span>
-                        </div>
-
-                        <!-- Group Task Items -->
-                        <div class="divide-y divide-slate-100">
-                            ${tasks.map(task => `
-                                <div class="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-slate-50/50 transition">
-                                    <!-- Left Side: Checkbox + Work Details -->
-                                    <div class="flex items-start space-x-3.5 flex-grow">
-                                        <button onclick="toggleTaskComplete('${task.id}')" class="mt-0.5 text-slate-400 hover:text-emerald-600 transition text-lg">
-                                            <i class="fa-regular ${task.completed ? 'fa-circle-check text-emerald-600' : 'fa-circle'}"></i>
-                                        </button>
-                                        <div class="space-y-1">
-                                            <p class="text-sm font-medium ${task.completed ? 'line-through text-slate-400' : 'text-slate-800'}">
-                                                ${escapeHtml(task.description)}
-                                            </p>
-                                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                                                <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium border border-blue-200/60">
-                                                    <i class="fa-solid fa-location-dot mr-1 text-blue-500"></i>${escapeHtml(task.location)}
-                                                </span>
-                                                <span class="text-slate-400">
-                                                    <i class="fa-regular fa-calendar mr-1"></i>${task.date || 'No Date'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Right Side: Delete Action -->
-                                    <div class="self-end sm:self-center shrink-0">
-                                        <button onclick="deleteTask('${task.id}')" class="text-slate-400 hover:text-rose-600 p-1.5 rounded transition" title="Delete Task">
-                                            <i class="fa-regular fa-trash-can text-sm"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
-        };
-
-        // TASK ACTIONS
-        window.toggleTaskComplete = function(taskId) {
-            const task = window.appData.tasks.find(t => t.id === taskId);
-            if (task) {
-                task.completed = !task.completed;
-                window.syncData();
-            }
-        };
-
-        window.deleteTask = function(taskId) {
-            if (confirm("Are you sure you want to delete this work task?")) {
-                window.appData.tasks = window.appData.tasks.filter(t => t.id !== taskId);
-                window.syncData();
-            }
-        };
-
-        window.handleAddWork = function(e) {
-            e.preventDefault();
-            const location = document.getElementById('workLocation').value;
-            const engineer = document.getElementById('workEngineer').value;
-            const description = document.getElementById('workDescription').value.trim();
-            const date = document.getElementById('workDate').value;
-
-            if (!description) return;
-
-            const newTask = {
-                id: 'task-' + Date.now(),
-                location,
-                engineer,
-                description,
-                date,
-                completed: false,
-                createdAt: Date.now()
-            };
-
-            window.appData.tasks.unshift(newTask);
-            document.getElementById('addWorkForm').reset();
-            closeModal('addWorkModal');
-            window.syncData();
-        };
-
-        // LOCATION MANAGEMENT
-        window.handleAddLocation = function() {
-            const input = document.getElementById('newLocationName');
-            const val = input.value.trim();
-            if (val && !window.appData.locations.includes(val)) {
-                window.appData.locations.push(val);
-                input.value = '';
-                window.syncData();
-            }
-        };
-
-        window.handleDeleteLocation = function(name) {
-            if (confirm(`Delete location "${name}"? Existing tasks will retain their record.`)) {
-                window.appData.locations = window.appData.locations.filter(l => l !== name);
-                window.syncData();
-            }
-        };
-
-        function renderLocationsList() {
-            const list = document.getElementById('locationsList');
-            list.innerHTML = window.appData.locations.map(loc => `
-                <div class="px-3 py-2 flex items-center justify-between text-sm">
-                    <span class="text-slate-700 font-medium">${escapeHtml(loc)}</span>
-                    <button onclick="handleDeleteLocation('${escapeHtml(loc)}')" class="text-slate-400 hover:text-rose-600">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        // ENGINEER MANAGEMENT
-        window.handleAddEngineer = function() {
-            const input = document.getElementById('newEngineerName');
-            const val = input.value.trim();
-            if (val && !window.appData.engineers.includes(val)) {
-                window.appData.engineers.push(val);
-                input.value = '';
-                window.syncData();
-            }
-        };
-
-        window.handleDeleteEngineer = function(name) {
-            if (confirm(`Delete engineer "${name}"? Existing tasks will retain their record.`)) {
-                window.appData.engineers = window.appData.engineers.filter(e => e !== name);
-                window.syncData();
-            }
-        };
-
-        function renderEngineersList() {
-            const list = document.getElementById('engineersList');
-            list.innerHTML = window.appData.engineers.map(eng => `
-                <div class="px-3 py-2 flex items-center justify-between text-sm">
-                    <span class="text-slate-700 font-medium">${escapeHtml(eng)}</span>
-                    <button onclick="handleDeleteEngineer('${escapeHtml(eng)}')" class="text-slate-400 hover:text-rose-600">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        // TAB SWITCHING
-        window.switchTab = function(tabName) {
-            window.currentTab = tabName;
-            const activeBtn = document.getElementById('tabActive');
-            const completedBtn = document.getElementById('tabCompleted');
-
-            if (tabName === 'active') {
-                activeBtn.className = "py-2.5 px-5 font-semibold text-sm border-b-2 border-blue-800 text-blue-900 transition flex items-center space-x-2";
-                completedBtn.className = "py-2.5 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center space-x-2";
-            } else {
-                completedBtn.className = "py-2.5 px-5 font-semibold text-sm border-b-2 border-blue-800 text-blue-900 transition flex items-center space-x-2";
-                activeBtn.className = "py-2.5 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center space-x-2";
-            }
-            renderTasks();
-        };
-
-        // FIREBASE MODAL & CONFIG
-        window.handleSaveFirebaseConfig = function(e) {
-            e.preventDefault();
-            const config = {
-                apiKey: document.getElementById('cfg_apiKey').value.trim(),
-                authDomain: document.getElementById('cfg_authDomain').value.trim(),
-                databaseURL: document.getElementById('cfg_databaseURL').value.trim(),
-                projectId: document.getElementById('cfg_projectId').value.trim(),
-                storageBucket: document.getElementById('cfg_storageBucket').value.trim(),
-                appId: document.getElementById('cfg_appId').value.trim()
-            };
-
-            localStorage.setItem('firebase_config', JSON.stringify(config));
-            closeModal('firebaseModal');
-            alert("Firebase config saved! Reloading live sync connection...");
-            window.location.reload();
-        };
-
-        window.clearFirebaseConfig = function() {
-            if (confirm("Disconnect Firebase live sync and revert to device local storage?")) {
-                localStorage.removeItem('firebase_config');
-                closeModal('firebaseModal');
-                window.location.reload();
-            }
-        };
-
-        function populateFirebaseForm() {
-            const saved = localStorage.getItem('firebase_config');
-            if (saved) {
-                try {
-                    const cfg = JSON.parse(saved);
-                    document.getElementById('cfg_apiKey').value = cfg.apiKey || '';
-                    document.getElementById('cfg_authDomain').value = cfg.authDomain || '';
-                    document.getElementById('cfg_databaseURL').value = cfg.databaseURL || '';
-                    document.getElementById('cfg_projectId').value = cfg.projectId || '';
-                    document.getElementById('cfg_storageBucket').value = cfg.storageBucket || '';
-                    document.getElementById('cfg_appId').value = cfg.appId || '';
-                } catch(e) {}
-            }
-        }
-
-        // MODAL HELPERS
-        window.openModal = function(id) {
-            document.getElementById(id).classList.remove('hidden');
-        };
-
-        window.closeModal = function(id) {
-            document.getElementById(id).classList.add('hidden');
-        };
-
-        // UTILS
-        function escapeHtml(str) {
-            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : '';
-        }
-    </script>
+    // Initialize App
+    initFirebase();
+    refreshUI();
+  </script>
 </body>
 </html>
