@@ -259,6 +259,9 @@
     .task-meta {
       font-size: 11px;
       color: #64748b;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .task-actions {
@@ -432,7 +435,7 @@
       </div>
     </div>
 
-    <!-- ADD WORK BUTTON (Moved above active works) -->
+    <!-- ADD WORK BUTTON -->
     <button class="add-work-btn" onclick="openAddModal()">+ ADD WORK</button>
 
     <!-- Active / Completed Tabs -->
@@ -689,19 +692,26 @@
           const groupEl = document.createElement('div');
           groupEl.className = 'engineer-group';
 
-          const tasksHtml = engGrouped[engHeader].map(t => `
-            <div class="task-item ${t.completed ? 'completed-task' : ''}">
-              <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
-              <div class="task-content">
-                <div class="task-title">${t.title}</div>
-                <div class="task-meta">Added ${t.date}</div>
+          const tasksHtml = engGrouped[engHeader].map(t => {
+            let dateText = `<span>Created: ${t.date}</span>`;
+            if (t.completed) {
+              dateText += `<span style="color:#16a34a; font-weight:600;">✓ Completed: ${t.completedDate || t.date}</span>`;
+            }
+
+            return `
+              <div class="task-item ${t.completed ? 'completed-task' : ''}">
+                <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
+                <div class="task-content">
+                  <div class="task-title">${t.title}</div>
+                  <div class="task-meta">${dateText}</div>
+                </div>
+                <div class="task-actions">
+                  <button class="task-btn" onclick="editTask(${t.id})">Edit</button>
+                  <button class="task-btn" style="color:#dc2626;" onclick="deleteTask(${t.id})">Delete</button>
+                </div>
               </div>
-              <div class="task-actions">
-                <button class="task-btn" onclick="editTask(${t.id})">Edit</button>
-                <button class="task-btn" style="color:#dc2626;" onclick="deleteTask(${t.id})">Delete</button>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
 
           groupEl.innerHTML = `
             <div class="engineer-header">
@@ -884,7 +894,8 @@
           engineer: eng,
           title: title,
           date: dateStr,
-          completed: false
+          completed: false,
+          completedDate: null
         });
       }
 
@@ -916,6 +927,12 @@
       const t = state.tasks.find(x => x.id === id);
       if (t) {
         t.completed = !t.completed;
+        if (t.completed) {
+          const today = new Date();
+          t.completedDate = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        } else {
+          t.completedDate = null;
+        }
         syncState();
       }
     }
