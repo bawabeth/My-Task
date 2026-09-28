@@ -127,6 +127,25 @@
       border-color: #1e4976;
     }
 
+    .add-work-btn {
+      width: 100%;
+      background: #1e4976;
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+    }
+
+    .add-work-btn:hover {
+      background: #163658;
+    }
+
     .tabs-container {
       display: flex;
       background: #e2e8f0;
@@ -262,25 +281,6 @@
     .completed-task .task-title {
       text-decoration: line-through;
       color: #94a3b8;
-    }
-
-    .add-work-btn {
-      width: 100%;
-      background: #1e4976;
-      color: #ffffff;
-      border: none;
-      padding: 14px;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-top: 10px;
-    }
-
-    .add-work-btn:hover {
-      background: #163658;
     }
 
     /* Modal Styling */
@@ -432,6 +432,9 @@
       </div>
     </div>
 
+    <!-- ADD WORK BUTTON (Moved above active works) -->
+    <button class="add-work-btn" onclick="openAddModal()">+ ADD WORK</button>
+
     <!-- Active / Completed Tabs -->
     <div class="tabs-container">
       <button class="tab-btn active" id="activeTabBtn" onclick="switchTab('active')">Active Works</button>
@@ -443,8 +446,6 @@
     <!-- Task List Area -->
     <div id="taskListArea"></div>
 
-    <!-- Add Work Button -->
-    <button class="add-work-btn" onclick="openAddModal()">+ ADD WORK</button>
   </div>
 
   <!-- Add/Edit Task Modal -->
