@@ -158,11 +158,31 @@
       margin-bottom: 12px;
     }
 
+    /* Area Section Header */
+    .area-header {
+      background: #1e4976;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .area-header:first-child {
+      margin-top: 0;
+    }
+
     .engineer-group {
       background: #ffffff;
       border-radius: 8px;
       border: 1px solid #e2e8f0;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       overflow: hidden;
       box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
@@ -177,6 +197,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .engineer-location-tag {
+      font-size: 12px;
+      font-weight: 500;
+      color: #475569;
+      margin-left: 6px;
     }
 
     .task-item {
@@ -249,6 +276,7 @@
       cursor: pointer;
       letter-spacing: 0.5px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-top: 10px;
     }
 
     .add-work-btn:hover {
@@ -424,23 +452,18 @@
     <div class="modal-content">
       <div class="modal-title" id="taskModalTitle">Add New Work</div>
       
-      <!-- 1. LOCATION AT THE TOP -->
       <div class="form-field">
         <label>Location</label>
         <select id="taskLocation" onchange="updateEngineerDropdownInModal()">
-          <!-- Populated dynamically -->
         </select>
       </div>
 
-      <!-- 2. ENGINEER DROPDOWN -->
       <div class="form-field" id="engineerFieldContainer">
         <label>Engineer Name</label>
         <select id="taskEngineer">
-          <!-- Populated dynamically -->
         </select>
       </div>
 
-      <!-- 3. TASK TITLE -->
       <div class="form-field">
         <label>Task Description</label>
         <input type="text" id="taskTitleInput" placeholder="e.g. LPO not received or Cable Jointing">
@@ -478,7 +501,6 @@
       <div class="form-field">
         <label>Location Assignment</label>
         <select id="engModalLocationSelect">
-          <!-- Dynamically populated without Office Works -->
         </select>
       </div>
       <div class="form-field">
@@ -526,27 +548,16 @@
   </div>
 
   <script>
-    // Initial default data state
     let state = {
       locations: ["Sohar NAMA", "Saham NAMA", "Shinas NAMA", "Office Works"],
-      engineers: [
-        { name: "Abdullah Al Ajmi", location: "Sohar NAMA" },
-        { name: "Ahmed", location: "Sohar NAMA" },
-        { name: "Salim", location: "Saham NAMA" }
-      ],
-      tasks: [
-        { id: 1, engineer: "Abdullah Al Ajmi", title: "LPO not received", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false },
-        { id: 2, engineer: "Abdullah Al Ajmi", title: "Municipality refund letter", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false },
-        { id: 3, engineer: "Ahmed", title: "SOH/180/2026 - Customer objection", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false },
-        { id: 4, engineer: "Ahmed", title: "SRV sign", location: "Sohar NAMA", date: "Sep 27, 2026", completed: false }
-      ]
+      engineers: [],
+      tasks: []
     };
 
     let currentTab = 'active';
     let editingTaskId = null;
     let dbRef = null;
 
-    // Load Local Data First
     const localData = localStorage.getItem('myWorksData');
     if (localData) {
       try { state = JSON.parse(localData); } catch(e){}
@@ -641,46 +652,64 @@
       const activeCount = state.tasks.filter(t => !t.completed).length;
       document.getElementById('activeCountText').textContent = `${activeCount} active works`;
 
-      const grouped = {};
-      filteredTasks.forEach(t => {
-        const key = t.location === 'Office Works' || !t.engineer ? 'Office Works' : t.engineer;
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(t);
-      });
-
       const container = document.getElementById('taskListArea');
       container.innerHTML = '';
 
-      if (Object.keys(grouped).length === 0) {
+      if (filteredTasks.length === 0) {
         container.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8;">No ${currentTab} works found.</div>`;
         return;
       }
 
-      for (const groupHeader in grouped) {
-        const groupEl = document.createElement('div');
-        groupEl.className = 'engineer-group';
+      // Group by Area First
+      const areaGrouped = {};
+      filteredTasks.forEach(t => {
+        const area = t.location || 'Office Works';
+        if (!areaGrouped[area]) areaGrouped[area] = [];
+        areaGrouped[area].push(t);
+      });
 
-        const tasksHtml = grouped[groupHeader].map(t => `
-          <div class="task-item ${t.completed ? 'completed-task' : ''}">
-            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
-            <div class="task-content">
-              <div class="task-title">${t.title}</div>
-              <div class="task-meta">${t.location} · Added ${t.date}</div>
-            </div>
-            <div class="task-actions">
-              <button class="task-btn" onclick="editTask(${t.id})">Edit</button>
-              <button class="task-btn" style="color:#dc2626;" onclick="deleteTask(${t.id})">Delete</button>
-            </div>
-          </div>
-        `).join('');
+      // Render Area Groups
+      for (const area in areaGrouped) {
+        // Area Header
+        const areaHeaderEl = document.createElement('div');
+        areaHeaderEl.className = 'area-header';
+        areaHeaderEl.innerHTML = `📍 ${area}`;
+        container.appendChild(areaHeaderEl);
 
-        groupEl.innerHTML = `
-          <div class="engineer-header">
-            <span>${groupHeader}</span>
-          </div>
-          ${tasksHtml}
-        `;
-        container.appendChild(groupEl);
+        // Group tasks inside this Area by Engineer
+        const engGrouped = {};
+        areaGrouped[area].forEach(t => {
+          const engKey = area === 'Office Works' || !t.engineer ? 'Office Works' : t.engineer;
+          if (!engGrouped[engKey]) engGrouped[engKey] = [];
+          engGrouped[engKey].push(t);
+        });
+
+        for (const engHeader in engGrouped) {
+          const groupEl = document.createElement('div');
+          groupEl.className = 'engineer-group';
+
+          const tasksHtml = engGrouped[engHeader].map(t => `
+            <div class="task-item ${t.completed ? 'completed-task' : ''}">
+              <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
+              <div class="task-content">
+                <div class="task-title">${t.title}</div>
+                <div class="task-meta">Added ${t.date}</div>
+              </div>
+              <div class="task-actions">
+                <button class="task-btn" onclick="editTask(${t.id})">Edit</button>
+                <button class="task-btn" style="color:#dc2626;" onclick="deleteTask(${t.id})">Delete</button>
+              </div>
+            </div>
+          `).join('');
+
+          groupEl.innerHTML = `
+            <div class="engineer-header">
+              <span>👷 ${engHeader} <span class="engineer-location-tag">· ${area}</span></span>
+            </div>
+            ${tasksHtml}
+          `;
+          container.appendChild(groupEl);
+        }
       }
     }
 
@@ -916,7 +945,6 @@
       location.reload();
     }
 
-    // Fill Sync Modal with current configs if exists
     const currentCfg = JSON.parse(localStorage.getItem('myWorksFirebaseCfg'));
     if (currentCfg) {
       document.getElementById('cfgApiKey').value = currentCfg.apiKey || '';
@@ -925,7 +953,6 @@
       document.getElementById('cfgProjectId').value = currentCfg.projectId || '';
     }
 
-    // Initialize App
     initFirebase();
     refreshUI();
   </script>
